@@ -13,7 +13,8 @@ from grit.core.feature_extraction import FeatureExtractor, GoalDetector
 from shapely.geometry import LineString
 from shapely.errors import TopologicalError
 
-from grit.core.base import get_data_dir, get_base_dir, get_scenarios_dir
+from grit.core.base import get_data_dir, get_base_dir, get_scenarios_dir, set_working_dir
+from functools import lru_cache
 
 FRAME_STEP_SIZE = 25  # take a frame every 25 in the original episode frames (i.e., one per second)
 
@@ -122,6 +123,7 @@ def get_trajectories(scenario, episode, trimmed=False):
     return trimmed_trajectories, goals
 
 
+@lru_cache(maxsize=128)
 def get_trajectory_reachable_goals(trajectory, feature_extractor, scenario):
     # iterate through each sampled point in time for trajectory
     reachable_goals_list = []
@@ -180,10 +182,11 @@ def is_target_vehicle_occluded(current_frame_id, feature_extractor, target_agent
     target_agent = episode_frames[current_frame_id][target_agent_id]
 
     # Get the current lane on which the target vehicle is.
-    try:
-        lane_on = feature_extractor.scenario_map.lanes_at(target_agent.position)[0]
-    except IndexError:
-        # Treat the vehicle as occluded since it is outside any lane.
+    lane_on = feature_extractor.scenario_map.best_lane_at(target_agent.position, target_agent.heading,
+                                                          drivable_only=True)
+
+    if lane_on is None:
+        # The target vehicle is outside any road. We thus treat the vehicle as occluded.
         return True
 
     # Get the occlusions on the lane the target is on.
@@ -326,6 +329,8 @@ def prepare_episode_dataset(params):
 
     scenario_map = Map.parse_from_opendrive(get_scenarios_dir() + f"maps/{scenario_name}.xodr")
     scenario_config = ScenarioConfig.load(get_scenarios_dir() + f"configs/{scenario_name}.json")
+
+    set_working_dir()
     scenario = InDScenario(scenario_config)
 
     if extract_indicator_features:

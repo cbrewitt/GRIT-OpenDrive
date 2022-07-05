@@ -1,7 +1,7 @@
 import argparse
 
 from grit.occlusion_detection.occlusion_detection_geometry import OcclusionDetector2D
-from grit.core.base import create_folders
+from grit.core.base import create_folders, set_working_dir
 
 
 def main():
@@ -22,6 +22,7 @@ def main():
     args = parser.parse_args()
 
     create_folders()
+    set_working_dir()
 
     print('scenario {} episode {}'.format(args.scenario, args.episode_idx))
 
