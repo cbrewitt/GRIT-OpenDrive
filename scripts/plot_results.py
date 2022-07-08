@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from grit.core.base import get_base_dir
+from grit.core.base import get_base_dir, get_all_scenarios
 import itertools
 
 
@@ -8,7 +8,7 @@ plt.style.use('ggplot')
 
 model_names = ['prior_baseline', 'grit', 'generalised_grit',
                'grit_uniform_prior', 'uniform_prior_baseline', 'occlusion_baseline']
-scenario_names = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
+scenario_names = get_all_scenarios()
 
 model_names = ['generalised_grit', 'occlusion_baseline', 'occlusion_grit']
 #model_names = ['grit_uniform_prior', 'generalised_grit']
@@ -22,7 +22,7 @@ label_map = {'generalised_grit': 'G-GRIT',
 title_map = {'heckstrasse': 'Heckstrasse',
              'bendplatz': 'Bendplatz',
              'frankenburg': 'Frankenburg',
-             'round': 'Neuweiler'}
+             'neuweiler': 'Neuweiler'}
 
 
 # plot accuracy

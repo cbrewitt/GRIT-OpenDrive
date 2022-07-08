@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-from grit.core.base import get_base_dir
+from grit.core.base import get_base_dir, get_all_scenarios
 from grit.core.data_processing import get_dataset
 from grit.decisiontree.dt_goal_recogniser import Grit, GeneralisedGrit, UniformPriorGrit, OcclusionGrit, \
     OcclusionBaseline, NoPossiblyMissingFeaturesGrit
@@ -30,7 +30,7 @@ def main():
     args = parser.parse_args()
 
     if args.scenario is None:
-        scenario_names = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
+        scenario_names = get_all_scenarios()
     else:
         scenario_names = args.scenario.split(',')
 

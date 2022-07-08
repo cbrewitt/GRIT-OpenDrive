@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from igp2.data import ScenarioConfig
 
 from grit.core.data_processing import prepare_episode_dataset
+from grit.core.base import get_all_scenarios
 
 
 def main():
@@ -16,7 +17,7 @@ def main():
     args = parser.parse_args()
 
     if args.scenario is None:
-        scenarios = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
+        scenarios = get_all_scenarios()
     else:
         scenarios = [args.scenario]
 

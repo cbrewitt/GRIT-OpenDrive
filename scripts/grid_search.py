@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
 
+from grit.core.base import get_all_scenarios
 from grit.core.data_processing import get_dataset
 from grit.decisiontree.dt_goal_recogniser import OcclusionGrit
 
-scenario_names = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
+scenario_names = get_all_scenarios()
 
 ccp_values = [0.001, 0.0003, 0.0001]
 true_goal_prob = []

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <OpenDRIVE>
-    <header revMajor="1" revMinor="1" name="round" version="1" date="Wed May 19 14:24:06 2021" north="5.0000000000000000e+001" south="-1.2500000000000000e+002" east="1.5000000000000000e+002" west="-1.0000000000000000e+001" />
+    <header revMajor="1" revMinor="1" name="neuweiler" version="1" date="Wed May 19 14:24:06 2021" north="5.0000000000000000e+001" south="-1.2500000000000000e+002" east="1.5000000000000000e+002" west="-1.0000000000000000e+001" />
     <road name="west_approaching" length="1.5000000000000000e+001" id="0" junction="-1">
         <link>
             <predecessor elementType="road" elementId="1" contactPoint="end" />

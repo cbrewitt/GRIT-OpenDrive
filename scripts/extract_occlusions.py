@@ -2,7 +2,7 @@ import argparse
 from multiprocessing import Pool
 
 from grit.occlusion_detection.occlusion_detection_geometry import OcclusionDetector2D
-from grit.core.base import create_folders, set_working_dir
+from grit.core.base import create_folders, set_working_dir, get_all_scenarios
 from igp2.data import ScenarioConfig
 
 
@@ -44,7 +44,7 @@ def main():
         args.debug_steps = False
 
     if args.scenario is None:
-        scenarios = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
+        scenarios = get_all_scenarios()
     else:
         scenarios = [args.scenario]
 

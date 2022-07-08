@@ -2,6 +2,10 @@ import pathlib
 import os
 
 
+def get_all_scenarios():
+    return ['heckstrasse','bendplatz', 'frankenburg', 'neuweiler']
+
+
 def create_folders():
     # Create a folder to store the data.
     data_folder_path = get_base_dir() + '/data/'

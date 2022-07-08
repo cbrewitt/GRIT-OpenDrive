@@ -22,7 +22,6 @@ class FeatureExtractor:
     # Maximum distance the occlusion can be to be considered as significant for creating occlusions.
     MAX_OCCLUSION_DISTANCE = 30
 
-    FRAME_STEP_SIZE = 25
     MISSING = True
     NON_MISSING = False
 
@@ -117,8 +116,7 @@ class FeatureExtractor:
         # We pass the ego_agent_id only if we want to extract the indicator features.
         if ego_agent_id is not None:
 
-            occlusion_frame_id = math.ceil(current_state.time / self.FRAME_STEP_SIZE)
-            frame_occlusions = self.occlusions[occlusion_frame_id]
+            frame_occlusions = self.occlusions[current_state.time]
 
             occlusions = unary_union(self.get_occlusions_ego_polygon(frame_occlusions, ego_agent_id))
             vehicle_in_front_occluded = self.is_vehicle_in_front_missing(vehicle_in_front_dist, agent_id, lane_path,
@@ -130,7 +128,7 @@ class FeatureExtractor:
             initial_state = initial_frame[agent_id]
 
             exit_number_occluded = self.is_exit_number_missing(initial_state, goal) \
-                if self.scenario_name == "round" else False
+                if self.scenario_name == "neuweiler" else False
 
             indicator_features = {'vehicle_in_front_missing': vehicle_in_front_occluded,
                                   'oncoming_vehicle_missing': oncoming_vehicle_occluded,

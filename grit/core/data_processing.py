@@ -16,7 +16,7 @@ from shapely.errors import TopologicalError
 from grit.core.base import get_data_dir, get_base_dir, get_scenarios_dir, set_working_dir
 from functools import lru_cache
 
-FRAME_STEP_SIZE = 25  # take a frame every 25 in the original episode frames (i.e., one per second)
+FRAME_STEP_SIZE = 25  # take a sample every 25 frames in the original episode frames (i.e., one per second)
 
 
 def load_dataset_splits():
@@ -174,8 +174,7 @@ def _get_frame_ids(episode, target_agent_id, ego_agent_id=None):
 
 
 def is_target_vehicle_occluded(current_frame_id, feature_extractor, target_agent_id, ego_agent_id, episode_frames):
-    occlusion_frame_id = math.ceil(current_frame_id / FRAME_STEP_SIZE)
-    frame_occlusions = feature_extractor.occlusions[occlusion_frame_id]
+    frame_occlusions = feature_extractor.occlusions[current_frame_id]
 
     occlusions = frame_occlusions[ego_agent_id]
 
@@ -251,7 +250,7 @@ def extract_samples(feature_extractor, scenario, episode, extract_missing_featur
                 true_goal_route = reachable_goals_list[0][true_goal_idx].lane_path
                 true_goal_type = feature_extractor.goal_type(true_goal_route)
 
-                # Align the frames with those for which we have occlusions (one every second).
+                # Align the frames so that they are multiples of FRAME_STEP_SIZE
                 initial_frame_offset = FRAME_STEP_SIZE * math.ceil(initial_frame_id/FRAME_STEP_SIZE) - initial_frame_id
                 # Save the first frame in which the target vehicle wasn't occluded w.r.t the ego.
                 first_frame_target_not_occluded = None
