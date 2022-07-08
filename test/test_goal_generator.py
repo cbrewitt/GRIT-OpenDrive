@@ -155,8 +155,8 @@ def test_bendplatz_southeast():
     assert goal_in_list(goals, 'straight-on', (49.2, -20.9))
 
 
-def test_frankenberg_northwest():
-    xodr = "../scenarios/maps/frankenberg.xodr"
+def test_frankenburg_northwest():
+    xodr = "../scenarios/maps/frankenburg.xodr"
     scenario_map = Map.parse_from_opendrive(xodr)
     heading = np.deg2rad(-45)
     speed = 5
@@ -176,8 +176,8 @@ def test_frankenberg_northwest():
     assert goal_in_list(goals, 'straight-on', (45.2, -35.1))
 
 
-def test_frankenberg_southwest():
-    xodr = "../scenarios/maps/frankenberg.xodr"
+def test_frankenburg_southwest():
+    xodr = "../scenarios/maps/frankenburg.xodr"
     scenario_map = Map.parse_from_opendrive(xodr)
     heading = np.deg2rad(20)
     speed = 5

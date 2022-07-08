@@ -5,7 +5,7 @@ from igp2.data import ScenarioConfig
 from grit.core.base import get_data_dir, get_base_dir
 
 
-scenarios = ['heckstrasse', 'bendplatz', 'frankenberg', 'round']
+scenarios = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
 
 for scenario_name in scenarios:
     scenario_config = ScenarioConfig.load(get_base_dir() + f"/scenarios/configs/{scenario_name}.json")

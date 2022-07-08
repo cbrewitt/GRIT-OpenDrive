@@ -8,7 +8,7 @@ plt.style.use('ggplot')
 
 model_names = ['prior_baseline', 'grit', 'generalised_grit',
                'grit_uniform_prior', 'uniform_prior_baseline', 'occlusion_baseline']
-scenario_names = ['heckstrasse', 'bendplatz', 'frankenberg', 'round']
+scenario_names = ['heckstrasse', 'bendplatz', 'frankenburg', 'round']
 
 model_names = ['generalised_grit', 'occlusion_baseline', 'occlusion_grit']
 #model_names = ['grit_uniform_prior', 'generalised_grit']
@@ -21,7 +21,7 @@ label_map = {'generalised_grit': 'G-GRIT',
 
 title_map = {'heckstrasse': 'Heckstrasse',
              'bendplatz': 'Bendplatz',
-             'frankenberg': 'Frankenburg',
+             'frankenburg': 'Frankenburg',
              'round': 'Neuweiler'}
 
 

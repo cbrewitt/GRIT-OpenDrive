@@ -1,10 +1,15 @@
 import math
 import pickle
+import json
+from copy import deepcopy
+from typing import List
+
 import numpy as np
 from itertools import combinations
 
 from grit.occlusion_detection.occlusion_line import OcclusionLine as Line
 from grit.core.data_processing import get_episode_frames
+from grit.core.base import get_scenarios_dir, get_occlusions_dir
 import grit.occlusion_detection.visualisation_tools as debug
 
 import igp2 as ip
@@ -24,8 +29,8 @@ class OcclusionDetector2D:
     def __init__(self, scenario_name: str, episode_idx: int, debug: bool = False, debug_steps: bool = False):
         self.scenario_name = scenario_name
         self.episode_idx = episode_idx
-        self.scenario_map = Map.parse_from_opendrive(f"scenarios/maps/{self.scenario_name}.xodr")
-        self.scenario_config = ScenarioConfig.load(f"scenarios/configs/{self.scenario_name}.json")
+        self.scenario_map = Map.parse_from_opendrive(get_scenarios_dir() + f"/maps/{self.scenario_name}.xodr")
+        self.scenario_config = ScenarioConfig.load(get_scenarios_dir() + f"/configs/{self.scenario_name}.json")
         self.scenario = InDScenario(self.scenario_config)
         self.episode = self.scenario.load_episode(episode_idx)
         self.buildings = self.scenario_config.buildings
@@ -35,10 +40,15 @@ class OcclusionDetector2D:
         self.debug_steps = debug_steps if debug_steps and not self.debug else False
         self.occlusion_lines = []
 
-    def extract_occlusions(self):
-        # Take a step every 25 recorded frames (1s)
-        # episode_frames contain for each second the list of frames for all vehicles alive that moment
-        episode_frames = get_episode_frames(self.episode, exclude_parked_cars=False, exclude_bicycles=True, step=25)
+    def extract_occlusions(self, save_format="p"):
+        """
+        Args:
+            save_format: enter "json" to store the occlusion data in json format, or leave empty to store them into
+                         pickle
+        """
+
+        # episode_frames contains for each time step the list of frames for all vehicles alive that moment
+        episode_frames = get_episode_frames(self.episode, exclude_parked_cars=False, exclude_bicycles=True)
 
         all_occlusion_data = {}
 
@@ -47,9 +57,48 @@ class OcclusionDetector2D:
 
             all_occlusion_data[frame_id] = self.get_occlusions_frame(frame)
 
-        occlusions_file_name = f"occlusions/{self.scenario_name}_e{self.episode_idx}.p"
-        with open(occlusions_file_name, 'wb') as file:
-            pickle.dump(all_occlusion_data, file)
+        if save_format == "json":
+            all_occlusion_data = self._to_json(all_occlusion_data)
+
+        self._save_occlusions(all_occlusion_data, save_format)
+
+    def _to_json(self, occlusions_data):
+        """
+        Convert the occlusions into a format that can be stored into json. E.g., store the occluded areas by their
+        boundaries rather than (Multi)Polygons.
+        """
+        occlusions_data_json = deepcopy(occlusions_data)
+
+        for frame_id, frame_occlusions in occlusions_data.items():
+            for ego_id, ego_occlusions in frame_occlusions.items():
+                for road_id, road_occlusions in ego_occlusions.items():
+                    for lane_id, lane_occlusions in road_occlusions.items():
+
+                        occlusions_data_json[frame_id][ego_id][road_id][lane_id] = []
+                        road_occlusions_data = occlusions_data_json[frame_id][ego_id][road_id][lane_id]
+
+                        if isinstance(lane_occlusions, Polygon):
+                            road_occlusions_data.append(self.convert_to_list(lane_occlusions.exterior.xy))
+                        elif isinstance(lane_occlusions, MultiPoint):
+                            for occlusion in lane_occlusions.geoms:
+                                road_occlusions_data.append(self.convert_to_list(occlusion.exterior.xy))
+        return occlusions_data_json
+
+    @staticmethod
+    def convert_to_list(coordinates: List[np.array]):
+        x, y = coordinates
+        return [list(x), list(y)]
+
+    def _save_occlusions(self, data_to_store, save_format):
+
+        occlusions_file_name = get_occlusions_dir() + f"/{self.scenario_name}_e{self.episode_idx}.{save_format}"
+
+        if save_format == "p":
+            with open(occlusions_file_name, 'wb') as file:
+                pickle.dump(data_to_store, file)
+        elif save_format == "json":
+            with open(occlusions_file_name, 'w') as file:
+                json.dump(data_to_store, file)
 
     def get_occlusions_frame(self, frame):
         frame_occlusions = {}
